@@ -36,7 +36,7 @@
     </div>
 
     <script>
-        const githubRawUrl = 'https://raw.githubusercontent.com/qurrin06/Lab-6-JSON/main/book.json';
+        const githubRawUrl = 'https://raw.githubusercontent.com/qurrin06/Lab-6-JSON/main/book.json?v=' + new Date().getTime();
         let booksData = [];
 
         async function loadBookData() {
@@ -54,36 +54,3 @@
                 document.getElementById('bookDetails').innerHTML = `<p style="color:red;">Failed to load book records from GitHub.</p>`;
             }
         }
-
-        loadBookData();
-
-        function populateDropdown(books) {
-            const selectElement = document.getElementById('bookSelect');
-            books.forEach(book => {
-                const option = document.createElement('option');
-                option.value = book.title;
-                option.textContent = book.title;
-                selectElement.appendChild(option);
-            });
-        }
-
-        document.getElementById('bookSelect').addEventListener('change', function() {
-            const selectedTitle = this.value;
-            const detailsDiv = document.getElementById('bookDetails');
-
-            const selectedBook = booksData.find(book => book.title === selectedTitle);
-
-            if (selectedBook) {
-                detailsDiv.innerHTML = `
-                    <h3>${selectedBook.title}</h3>
-                    <p><strong>Author:</strong> ${selectedBook.author}</p>
-                    <p><strong>Publication Year:</strong> ${selectedBook.publicationYear}</p>
-                    <p><strong>Genres:</strong> ${selectedBook.genres.join(', ')}</p>
-                `;
-            } else {
-                detailsDiv.innerHTML = `<p style="color: red;">Book record not found.</p>`;
-            }
-        });
-    </script>
-</body>
-</html>
