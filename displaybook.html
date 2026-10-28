@@ -47,10 +47,55 @@
                     throw new Error("Failed to fetch JSON from GitHub");
                 }
 
-                booksData = await response.json();
+                const rawData = await response.json();
+                console.log("Data loaded from GitHub:", rawData);
+
+                booksData = Array.isArray(rawData) ? rawData : (rawData.books || Object.values(rawData));
                 populateDropdown(booksData);
             } catch (error) {
                 console.error("Error:", error);
                 document.getElementById('bookDetails').innerHTML = `<p style="color:red;">Failed to load book records from GitHub.</p>`;
             }
         }
+
+        loadBookData();
+
+        function populateDropdown(books) {
+            const selectElement = document.getElementById('bookSelect');
+            selectElement.innerHTML = '<option value="">-- Choose a book --</option>';
+
+            if (!Array.isArray(books)) return;
+
+            books.forEach(book => {
+                const bookTitle = book.title || book.name;
+
+                if (bookTitle) {
+                    const option = document.createElement('option');
+                    option.value = bookTitle;
+                    option.textContent = bookTitle;
+                    selectElement.appendChild(option);
+                }
+            });
+        }
+
+        document.getElementById('bookSelect').addEventListener('change', function() {
+            const selectedTitle = this.value;
+            const detailsDiv = document.getElementById('bookDetails');
+
+            const selectedBook = booksData.find(book => (book.title || book.name) === selectedTitle);
+
+            if (selectedBook) {
+                const titleToDisplay = selectedBook.title || selectedBook.name;
+                detailsDiv.innerHTML = `
+                    <h3>${titleToDisplay}</h3>
+                    <p><strong>Author:</strong> ${selectedBook.author}</p>
+                    <p><strong>Publication Year:</strong> ${selectedBook.publicationYear}</p>
+                    <p><strong>Genres:</strong> ${selectedBook.genres ? selectedBook.genres.join(', ') : 'N/A'}</p>
+                `;
+            } else {
+                detailsDiv.innerHTML = `<p>Please select a book from the list to display details.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
